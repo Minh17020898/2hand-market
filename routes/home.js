@@ -35,22 +35,77 @@ router.get('(/:status)?', function(req, res, next) {
   pagination.currentPage = parseInt(paramsHelper.getParams(req.query,'page', 1));
 
 //condition for search and filter
-//search
 if(currentStatus === '') {
-  if(keyWord !== '') condition = {name: new RegExp(keyWord, 'i')};
+  if(req.query.hasOwnProperty('from') || req.query.hasOwnProperty('to')) {
+    if(minPrice == 0 && maxPrice == 0) {
+      condition={};
+    }
+    else {
+      if(maxPrice == 0) {
+        condition = {price: {$gte: minPrice}};
+      }
+      else {
+          condition = {price: {$lte: maxPrice, $gte: minPrice}};
+      }
+    }
+    
+  }
+  else {
+    if(req.query.hasOwnProperty('keyWord')) {
+      if(keyWord !== '') {
+        condition = {name: new RegExp(keyWord, 'i')};
+      }
+    }
+  }
+  
+  
 } else {
-  if(keyWord !== '') condition = {category: currentStatus, name: new RegExp(keyWord, 'i')};
-  else if(keyWord === '') condition = {category: currentStatus};
+  if(req.query.hasOwnProperty('from') || req.query.hasOwnProperty('to')) {
+    if(minPrice == 0 && maxPrice == 0) {
+      condition={category: currentStatus};
+    }
+    else {
+      if(maxPrice == 0) {
+        condition = {category: currentStatus, price: {$gte: minPrice}};
+      }
+      else {
+        condition = {category: currentStatus, price: {$lte: maxPrice, $gte: minPrice}};
+      }
+    } 
+  }
+  else {
+    if(req.query.hasOwnProperty('keyWord')) {
+      if(keyWord !== '') condition = {category: currentStatus, name: new RegExp(keyWord, 'i')};
+      else if(keyWord === '') condition = {category: currentStatus};
+    }
+    else {
+      condition={category: currentStatus};
+    }
+  }
+  
 }
 
-itemsModel.find(condition).then((items) => {
-  res.render('page/home/index', { 
-    title: 'trang chủ',
-    items,
-    statusFilter,
-    keyWord,
-    currentStatus
- });
+
+itemsModel.count(condition).then((data)=> {
+  pagination.itemsTotal = data;
+
+  itemsModel.find(condition)
+  .skip((pagination.currentPage-1)*pagination.totalItemsPerPage)
+  .limit(pagination.totalItemsPerPage)
+  .then((items) => {
+    res.render('page/home/index', { 
+      title: 'trang chủ',
+      items,
+      statusFilter,
+      keyWord,
+      pagination,
+      from,
+      to,
+      currentStatus
+    });
+  });
+});
+
 });
 
 //thong-tin-chi-tiet
