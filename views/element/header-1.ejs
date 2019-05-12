@@ -7,6 +7,22 @@
                 <a href="#" class=" pl-3"> Đăng kí </a>   
         </div>
     </div>
+    <div class="container " style="border-top: 1px solid white" >
+
+        <div class="row justify-content-md-center">
+            <a href="#"><img src="./img/logo2.png" style="width: 300px; height: 100px;" class="mr-4 p-3"></a>
+            <div class="col-md-4">
+                <form class="form-inline  mt-4 p-3" 
+                    action="/danh-muc-san-pham/<%= currentStatus %>" method="GET">
+                    <input class="form-control mr-1"  type="search" placeholder="Tìm kiếm..."
+                        name="keyWord" value="<%= keyWord %>" aria-label="Search">
+                    <button class="btn btn-danger " type="submit">Tìm kiếm</button>
+                </form>
+            </div>
+            <a href="#"><span><img src="./img/cart-icon1.png" class="mt-3 ml-3 mb-3 pt-3 pl-3 pb-3"></span></a>
+            <div class="Qty qty-header"></div>
+        </div>
+    </div>
 </div>
 
     <!--navbar-->
